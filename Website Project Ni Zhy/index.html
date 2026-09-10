@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Our Memories</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Georgia,"Times New Roman",serif;
+    background:#090909;
+    color:#f5f1e8;
+}
+
+body{
+    touch-action:pan-y;
+}
+
+button{
+    font-family:inherit;
+}
+
+#intro{
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:25px;
+    background:
+        radial-gradient(circle at center,rgba(255,190,80,.08),transparent 35%),
+        linear-gradient(145deg,#050505,#17130d,#050505);
+    transition:opacity 1.2s ease,visibility 1.2s ease;
+}
+
+#intro.hide{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+}
+
+.intro-box{
+    width:min(600px,94vw);
+    padding:35px 25px;
+}
+
+.intro-title{
+    font-size:clamp(30px,7vw,62px);
+    letter-spacing:4px;
+    margin-bottom:12px;
+    text-shadow:0 0 25px rgba(255,220,150,.2);
+}
+
+.intro-subtitle{
+    color:#cfc6b5;
+    font-size:clamp(16px,3vw,22px);
+    line-height:1.7;
+    margin-bottom:10px;
+}
+
+.creator{
+    color:#a99d89;
+    font-size:14px;
+    margin-bottom:28px;
+}
+
+.headphone{
+    font-size:13px;
+    color:#8e877b;
+    line-height:1.6;
+    margin-bottom:30px;
+}
+
+.candle-button{
+    position:relative;
+    width:105px;
+    height:145px;
+    margin:0 auto;
+    cursor:pointer;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+}
+
+.candle{
+    width:38px;
+    height:72px;
+    border-radius:5px 5px 9px 9px;
+    background:linear-gradient(90deg,#c5bba8,#f6eedc,#b8ad99);
+    box-shadow:0 10px 35px rgba(255,205,110,.2);
+    position:relative;
+}
+
+.candle:after{
+    content:"";
+    position:absolute;
+    top:-7px;
+    left:17px;
+    width:4px;
+    height:10px;
+    background:#292015;
+}
+
+.flame{
+    position:absolute;
+    top:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:25px;
+    height:38px;
+    background:radial-gradient(circle at 50% 75%,#fff5bd 0 18%,#ffc65b 38%,#ff8737 65%,transparent 70%);
+    border-radius:55% 55% 50% 50%;
+    filter:drop-shadow(0 0 15px #ffad45);
+    animation:flicker .9s infinite alternate ease-in-out;
+}
+
+@keyframes flicker{
+    from{transform:translateX(-50%) scale(.92) rotate(-2deg)}
+    to{transform:translateX(-50%) scale(1.08) rotate(3deg)}
+}
+
+.click-text{
+    position:absolute;
+    bottom:-30px;
+    left:50%;
+    transform:translateX(-50%);
+    white-space:nowrap;
+    font-size:12px;
+    color:#aaa092;
+    letter-spacing:2px;
+}
+
+#app{
+    position:fixed;
+    inset:0;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity 1s ease;
+    background:
+        radial-gradient(circle at 50% 20%,rgba(255,255,255,.035),transparent 35%),
+        #080808;
+}
+
+#app.show{
+    opacity:1;
+    visibility:visible;
+}
+
+.choice-screen{
+    position:absolute;
+    inset:0;
+    z-index:50;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+    background:
+        linear-gradient(rgba(5,5,5,.78),rgba(5,5,5,.92)),
+        radial-gradient(circle,#332919,#080808 65%);
+    transition:.8s ease;
+}
+
+.choice-screen.hidden{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+}
+
+.choice-title{
+    font-size:clamp(28px,6vw,54px);
+    letter-spacing:3px;
+    text-align:center;
+    margin-bottom:10px;
+}
+
+.choice-desc{
+    color:#aaa092;
+    text-align:center;
+    margin-bottom:38px;
+    line-height:1.6;
+}
+
+.choice-buttons{
+    display:flex;
+    gap:20px;
+    width:min(700px,95vw);
+}
+
+.choice-btn{
+    flex:1;
+    min-height:150px;
+    border:1px solid rgba(255,255,255,.14);
+    background:linear-gradient(145deg,#181510,#0c0c0c);
+    color:#f3ecdf;
+    cursor:pointer;
+    border-radius:16px;
+    padding:25px;
+    transition:.35s ease;
+    box-shadow:0 15px 45px rgba(0,0,0,.35);
+}
+
+.choice-btn:hover{
+    transform:translateY(-7px);
+    border-color:rgba(255,218,160,.35);
+    box-shadow:0 20px 60px rgba(0,0,0,.55);
+}
+
+.choice-icon{
+    font-size:42px;
+    display:block;
+    margin-bottom:14px;
+}
+
+.choice-name{
+    display:block;
+    font-size:22px;
+    letter-spacing:2px;
+    margin-bottom:7px;
+}
+
+.choice-small{
+    color:#918a80;
+    font-size:13px;
+}
+
+.book-area{
+    position:absolute;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    perspective:1800px;
+}
+
+.book-area.active{
+    display:flex;
+}
+
+.book{
+    width:min(1000px,96vw);
+    height:min(720px,91vh);
+    position:relative;
+    transform-style:preserve-3d;
+}
+
+.page{
+    position:absolute;
+    inset:0;
+    border-radius:8px;
+    overflow:hidden;
+    background:
+        linear-gradient(90deg,rgba(0,0,0,.18),transparent 12%,transparent 88%,rgba(0,0,0,.2)),
+        #eee8db;
+    color:#27231d;
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.75),
+        inset 0 0 80px rgba(70,50,25,.08);
+    opacity:0;
+    visibility:hidden;
+    transform:rotateY(-8deg) scale(.97);
+    transition:
+        opacity .65s ease,
+        transform .8s cubic-bezier(.2,.7,.2,1),
+        visibility .65s;
+    transform-origin:left center;
+}
+
+.page.active{
+    opacity:1;
+    visibility:visible;
+    transform:rotateY(0) scale(1);
+}
+
+.page.leaving{
+    opacity:0;
+    visibility:hidden;
+    transform:rotateY(65deg) scale(.96);
+}
+
+.page-inner{
+    height:100%;
+    overflow:auto;
+    padding:clamp(22px,5vw,55px);
+    display:flex;
+    flex-direction:column;
+}
+
+.page-number{
+    position:absolute;
+    top:18px;
+    right:25px;
+    font-size:11px;
+    color:#8c8375;
+    letter-spacing:2px;
+}
+
+.cover{
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    background:
+        radial-gradient(circle at center,rgba(255,255,255,.35),transparent 45%),
+        linear-gradient(145deg,#eee8db,#dcd2c0);
+}
+
+.cover-mark{
+    width:85px;
+    height:85px;
+    border:1px solid rgba(50,40,25,.25);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 28px;
+    font-size:36px;
+}
+
+.cover h1{
+    font-size:clamp(34px,7vw,66px);
+    font-weight:normal;
+    letter-spacing:5px;
+    margin-bottom:16px;
+}
+
+.cover h2{
+    font-size:clamp(15px,2.5vw,22px);
+    font-weight:normal;
+    color:#756d62;
+    letter-spacing:2px;
+    margin-bottom:30px;
+}
+
+.cover p{
+    max-width:650px;
+    margin:auto;
+}
+
+.quote{
+    margin-top:30px;
+    font-style:italic;
+    color:#71695e;
+    line-height:1.8;
+}
+
+.photo-page .page-inner{
+    display:grid;
+    grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);
+    gap:clamp(20px,4vw,50px);
+    align-items:center;
+}
+
+.photo-frame{
+    width:100%;
+    max-height:66vh;
+    aspect-ratio:4/3;
+    padding:10px;
+    background:#faf7ef;
+    box-shadow:0 12px 35px rgba(0,0,0,.25);
+    transform:rotate(-1deg);
+}
+
+.photo-frame img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+}
+
+.memory-text{
+    align-self:center;
+}
+
+.memory-label{
+    font-size:11px;
+    color:#93897a;
+    letter-spacing:3px;
+    margin-bottom:14px;
+    text-transform:uppercase;
+}
+
+.memory-text h2{
+    font-size:clamp(25px,4vw,42px);
+    font-weight:normal;
+    margin-bottom:22px;
+}
+
+.memory-text p{
+    color:#5b554c;
+    font-size:clamp(15px,2vw,18px);
+    line-height:1.9;
+}
+
+.video-page .page-inner{
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
+
+.video-page h2{
+    font-size:clamp(26px,5vw,46px);
+    font-weight:normal;
+    margin-bottom:20px;
+}
+
+.video-page p{
+    max-width:700px;
+    color:#625b50;
+    line-height:1.8;
+    margin-bottom:28px;
+}
+
+.video-frame{
+    width:min(800px,100%);
+    max-height:57vh;
+    background:#111;
+    padding:8px;
+    box-shadow:0 15px 50px rgba(0,0,0,.35);
+}
+
+.video-frame video{
+    width:100%;
+    max-height:55vh;
+    display:block;
+}
+
+.final-page{
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    background:
+        radial-gradient(circle at center,rgba(150,110,55,.1),transparent 55%),
+        linear-gradient(145deg,#eee8db,#d9cfbd);
+}
+
+.final-page h1{
+    font-size:clamp(35px,7vw,65px);
+    font-weight:normal;
+    letter-spacing:3px;
+    margin-bottom:10px;
+}
+
+.final-page h2{
+    font-size:clamp(17px,3vw,25px);
+    font-weight:normal;
+    color:#7b7164;
+    margin-bottom:28px;
+}
+
+.final-page p{
+    max-width:760px;
+    color:#575047;
+    font-size:clamp(15px,2vw,18px);
+    line-height:2;
+}
+
+.signature{
+    margin-top:35px;
+    font-style:italic;
+    color:#766c5d;
+    line-height:1.8;
+}
+
+.controls{
+    position:fixed;
+    z-index:200;
+    left:50%;
+    bottom:20px;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px 14px;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:50px;
+    background:rgba(10,10,10,.78);
+    backdrop-filter:blur(12px);
+    box-shadow:0 10px 40px rgba(0,0,0,.4);
+}
+
+.control-btn{
+    width:42px;
+    height:42px;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:50%;
+    background:#161616;
+    color:#eee;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.control-btn:hover{
+    background:#252525;
+    transform:scale(1.05);
+}
+
+.counter{
+    color:#a9a095;
+    min-width:75px;
+    text-align:center;
+    font-size:12px;
+    letter-spacing:1px;
+}
+
+.music-state{
+    position:fixed;
+    top:18px;
+    left:18px;
+    z-index:210;
+    font-size:11px;
+    color:#9e968a;
+    background:rgba(8,8,8,.6);
+    padding:8px 12px;
+    border-radius:20px;
+    backdrop-filter:blur(8px);
+}
+
+.back-choice{
+    position:fixed;
+    top:18px;
+    right:18px;
+    z-index:210;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:20px;
+    background:rgba(8,8,8,.6);
+    color:#aaa;
+    padding:8px 14px;
+    font-size:11px;
+    cursor:pointer;
+}
+
+.progress{
+    position:fixed;
+    z-index:205;
+    left:0;
+    top:0;
+    height:2px;
+    background:#d5b98a;
+    width:0;
+    transition:width .5s ease;
+}
+
+@media(max-width:700px){
+    .choice-buttons{
+        flex-direction:column;
+    }
+
+    .choice-btn{
+        min-height:125px;
+    }
+
+    .book-area{
+        padding:10px;
+    }
+
+    .book{
+        width:100%;
+        height:calc(100vh - 85px);
+    }
+
+    .page{
+        border-radius:5px;
+    }
+
+    .page-inner{
+        padding:35px 22px 80px;
+    }
+
+    .photo-page .page-inner{
+        display:flex;
+        flex-direction:column;
+        justify-content:flex-start;
+        gap:24px;
+    }
+
+    .photo-frame{
+        max-height:45vh;
+        aspect-ratio:4/3;
+        flex-shrink:0;
+    }
+
+    .memory-text h2{
+        margin-bottom:13px;
+    }
+
+    .memory-text p{
+        line-height:1.7;
+        font-size:14px;
+    }
+
+    .video-frame{
+        max-height:45vh;
+    }
+
+    .video-frame video{
+        max-height:42vh;
+    }
+
+    .controls{
+        bottom:10px;
+    }
+
+    .music-state{
+        top:10px;
+        left:10px;
+    }
+
+    .back-choice{
+        top:10px;
+        right:10px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="intro">
+    <div class="intro-box">
+        <div class="intro-title">Our Memories</div>
+        <div class="intro-subtitle">
+            Welcome to our website<br>
+            A place where memories will always remain.
+        </div>
+        <div class="creator">
+            Website created by Zyrus Jin V Ramos
+        </div>
+        <div class="headphone">
+            🎧 For a better experience, we recommend using headphones.<br>
+            Click the candle to enter and start the memories.
+        </div>
+
+        <div class="candle-button" id="enterButton">
+            <div class="flame"></div>
+            <div class="candle"></div>
+            <div class="click-text">CLICK TO ENTER</div>
+        </div>
+    </div>
+</div>
+
+<div id="app">
+
+    <audio id="memorialMusic" preload="auto">
+        <source src="music/memorial.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="choice-screen" id="choiceScreen">
+        <div class="choice-title">Whose Memories?</div>
+        <div class="choice-desc">
+            Choose a memory book to open.<br>
+            Every page holds a piece of someone we love.
+        </div>
+
+        <div class="choice-buttons">
+            <button class="choice-btn" onclick="openBook('tito')">
+                <span class="choice-icon">🕊️</span>
+                <span class="choice-name">Tito Memories</span>
+                <span class="choice-small">Memories of Tito</span>
+            </button>
+
+            <button class="choice-btn" onclick="openBook('lola')">
+                <span class="choice-icon">🌹</span>
+                <span class="choice-name">Lola Memories</span>
+                <span class="choice-small">Memories of Lola</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="music-state" id="musicState">♪ Memorial music</div>
+
+    <button class="back-choice" id="backChoice" onclick="backToChoice()" style="display:none">
+        Memories
+    </button>
+
+    <div class="progress" id="progress"></div>
+
+    <div class="book-area" id="titoBook">
+        <div class="book" id="titoPages">
+
+            <section class="page cover active">
+                <div class="page-inner">
+                    <div>
+                        <div class="cover-mark">🕊️</div>
+                        <h1>Para kay Tito</h1>
+                        <h2>Isang Alaala na Habang Buhay Naming Dadalhin</h2>
+                        <p>
+                            Para sa isang taong naging mahalagang bahagi ng aming pamilya.
+                            Maaaring hindi na namin marinig ang iyong boses o makita ang iyong ngiti,
+                            ngunit ang pagmamahal namin sa iyo ay hindi kailanman matatapos.
+                        </p>
+                        <div class="quote">
+                            “Ang isang taong minahal natin nang buong puso ay hindi kailanman tunay
+                            na nawawala. Nananatili siya sa bawat alaala, bawat kwento, at bawat
+                            tibok ng puso.”
+                        </div>
+                    </div>
+                </div>
+                <span class="page-number">TITO · 01</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Tito/john1.jpg" alt="Tito memory 1">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Tito · Memory 01</div>
+                        <h2>Salamat sa mga sandali</h2>
+                        <p>
+                            Tito, salamat sa bawat sandaling ipinahiram sa amin ng buhay kasama ka.
+                            Maaaring noon ay ordinaryong araw lamang ang mga sandaling iyon, ngunit
+                            ngayon, ang bawat isa ay napakahalaga. Bawat ngiti, bawat tawanan, bawat
+                            simpleng kwento at bawat pagkakataong nakasama ka ay isa nang kayamanang
+                            habang buhay naming iingatan.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">TITO · 02</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Tito/john2.jpg" alt="Tito memory 2">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Tito · Memory 02</div>
+                        <h2>Hindi namin inakala</h2>
+                        <p>
+                            Hindi namin alam na pagkatapos mawala ni Lola, darating din ang araw na
+                            ikaw naman ang kailangan naming paalamang. Hindi namin inakala na ang mga
+                            sandaling kasama ka ay magiging mga alaala na lamang. Sana ay nabigyan pa
+                            kami ng mas maraming oras para makasama ka, makausap ka, at maiparamdam sa
+                            iyo kung gaano ka namin kamahal. Miss na miss ka na namin, Tito.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">TITO · 03</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Tito/john3.jpg" alt="Tito memory 3">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Tito · Memory 03</div>
+                        <h2>Ang puwang na iniwan mo</h2>
+                        <p>
+                            Hindi mo alam kung gaano kalaki ang puwang na iniwan mo sa aming pamilya.
+                            May mga araw na tahimik lamang kami, ngunit sa loob namin ay hinahanap-hanap
+                            ka namin. Hinahanap namin ang iyong presensya, ang iyong mga kwento, ang
+                            iyong mga ngiti, at ang simpleng pakiramdam na nandiyan ka lamang.
+                            Mahal na mahal ka namin, Tito, at hinding-hindi ka namin makakalimutan.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">TITO · 04</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Tito/john4.jpg" alt="Tito memory 4">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Tito · Memory 04</div>
+                        <h2>Mga alaala</h2>
+                        <p>
+                            May mga alaala talagang kahit ilang taon pa ang lumipas ay mananatiling
+                            malinaw. Ang mga tawanan, kwentuhan, simpleng pagsasama at mga sandaling
+                            hindi namin pinansin noon ay ngayon ang mga bagay na pinakamamahal naming
+                            balikan. Salamat dahil naging bahagi ka ng aming buhay. Salamat dahil
+                            naging bahagi ka ng aming pamilya.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">TITO · 05</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Tito/john5.jpg" alt="Tito memory 5">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Tito · Memory 05</div>
+                        <h2>Kung maaari lang bumalik</h2>
+                        <p>
+                            Kung maaari lamang sanang bumalik sa nakaraan kahit saglit, pipiliin
+                            naming balikan ang mga araw na kasama ka. Hindi para baguhin ang anumang
+                            nangyari, kundi para muli naming maramdaman ang saya ng pagkakaroon ka sa
+                            aming tabi. Kung alam lang namin na darating ang araw na magiging alaala
+                            ka na lamang, mas marami sana kaming oras na inilaan para sabihin kung
+                            gaano ka kahalaga sa amin.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">TITO · 06</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Tito/john6.jpg" alt="Tito memory 6">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Tito · Memory 06</div>
+                        <h2>Maraming salamat</h2>
+                        <p>
+                            Maraming salamat, Tito. Salamat sa lahat ng pagmamahal, kabutihan,
+                            tulong, kwento, tawanan at mga sandaling ibinahagi mo sa amin.
+                            Hindi man namin nasabi ang lahat habang narito ka pa, sana ay alam mong
+                            mahal na mahal ka namin. Ang lahat ng iniwan mong alaala ay dadalhin
+                            namin saan man kami mapunta.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">TITO · 07</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Tito/john7.jpg" alt="Tito memory 7">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Tito · Memory 07</div>
+                        <h2>Hindi ka namin nakakalimutan</h2>
+                        <p>
+                            Nasaan ka man ngayon, gusto naming malaman mo na hindi ka namin
+                            nakakalimutan. May lugar ka pa rin sa aming mga kwento, sa aming mga
+                            pag-uusap, at higit sa lahat, sa aming mga puso. Kapag nami-miss ka namin,
+                            babalikan namin ang mga larawan at alaala mo. At sa bawat pag-alala namin
+                            sa iyo, muli naming mararamdaman ang pagmamahal na hindi kayang kunin
+                            ng kamatayan.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">TITO · 08</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Tito/john8.jpg" alt="Tito memory 8">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Tito · Memory 08</div>
+                        <h2>Bawat larawan ay may kwento</h2>
+                        <p>
+                            Bawat larawan ay may sariling kwento. Sa larawang ito, muli naming
+                            nakikita ang isang bahagi ng buhay mo na ayaw naming mawala sa aming mga
+                            alaala. Salamat sa mga panahong naging bahagi ka ng aming buhay. Kahit
+                            lumipas ang panahon, mananatiling mahalaga sa amin ang bawat larawan at
+                            bawat kwento tungkol sa iyo.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">TITO · 09</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Tito/john9.jpg" alt="Old picture of Tito">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Tito · Memory 09</div>
+                        <h2>Isang bahagi ng nakaraan</h2>
+                        <p>
+                            Ang lumang larawang ito ay isang munting bahagi ng nakaraan na habang
+                            buhay naming iingatan. Kapag tinitingnan namin ang larawan mo, hindi lang
+                            ang itsura mo ang nakikita namin kundi ang isang taong minahal namin at
+                            naging bahagi ng aming pamilya. Napakaraming taon man ang lumipas, ang
+                            alaala mo ay mananatiling buhay sa aming mga puso. Miss na miss ka namin,
+                            Tito.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">TITO · 10</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Tito/john10.jpg" alt="Tito in Mindoro">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Tito · Memory 10</div>
+                        <h2>Ang alaala sa Mindoro</h2>
+                        <p>
+                            Ang larawan mong ito na may suot na salamin sa Mindoro ay isa na namang
+                            alaala na espesyal sa amin. Sa tuwing tinitingnan namin ito, naaalala
+                            namin ang panahon, ang lugar, at ang sandaling kasama ka pa namin.
+                            Sana ay maaari naming balikan kahit isang araw lamang ang mga panahong
+                            iyon. Pero kahit hindi na maaari, mananatili sa amin ang larawan at ang
+                            kwento sa likod nito. Mahal na mahal ka namin, Tito.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">TITO · 11</span>
+            </section>
+
+            <section class="page video-page">
+                <div class="page-inner">
+                    <div class="memory-label">Tito · Memory 11</div>
+                    <h2>Isang alaala na gumagalaw</h2>
+                    <p>
+                        Ito ang isa sa mga alaala na maaari naming balikan kapag sobrang nami-miss ka
+                        namin. Sa bawat segundo ng video na ito, parang nabibigyan kami ng pagkakataong
+                        makita kang muli at maalala ang mga panahong kasama ka pa namin. Hindi man nito
+                        maibalik ang nakaraan, sapat na itong paalala na minsan ay nagkaroon kami ng
+                        napakagandang alaala kasama ka.
+                    </p>
+                    <div class="video-frame">
+                        <video controls playsinline preload="metadata">
+                            <source src="Tito/john.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+                <span class="page-number">TITO · 12</span>
+            </section>
+
+            <section class="page final-page">
+                <div class="page-inner">
+                    <div>
+                        <div class="cover-mark">🕊️</div>
+                        <h1>Paalam, Tito</h1>
+                        <h2>Mahal na Mahal Ka Namin</h2>
+                        <p>
+                            Hindi namin kailanman gugustuhing maging paalam ang huling salita para sa iyo.
+                            Gusto sana naming sabihin na hanggang sa muli. Pagkatapos mawala ni Lola,
+                            hindi namin inakala na darating din ang araw na kailangan ka naming paalamang.
+                            Napakasakit tanggapin na hindi ka na namin makakasama, ngunit nagpapasalamat
+                            kami dahil minsan ay naging bahagi ka ng aming buhay. Salamat sa lahat, Tito.
+                            Salamat sa pagmamahal, sa mga alaala, at sa bawat sandaling ibinigay mo sa
+                            aming pamilya. Pahinga ka na nang payapa. Huwag kang mag-alala, dahil habang
+                            kami ay nabubuhay, mabubuhay rin ang mga alaala mo sa aming mga puso.
+                            Miss na miss ka namin. Mahal na mahal ka namin. At hinding-hindi ka namin
+                            makakalimutan.
+                        </p>
+                        <div class="signature">
+                            Zyrus Jin V Ramos<br>
+                            Iyong pamangkin
+                        </div>
+                    </div>
+                </div>
+                <span class="page-number">TITO · 13</span>
+            </section>
+
+        </div>
+    </div>
+
+    <div class="book-area" id="lolaBook">
+        <div class="book" id="lolaPages">
+
+            <section class="page cover active">
+                <div class="page-inner">
+                    <div>
+                        <div class="cover-mark">🌹</div>
+                        <h1>Para kay Lola</h1>
+                        <h2>Habang Buhay Ka Naming Mamahalin</h2>
+                        <p>
+                            Para sa aming Lola, isang taong ang pagmamahal ay hindi kailanman
+                            mapapalitan. Ang mga taon ay lilipas, ngunit ang pagmamahal namin sa iyo
+                            ay mananatiling buhay sa aming mga puso.
+                        </p>
+                        <div class="quote">
+                            “May mga taong hindi natin kailanman makakalimutan dahil iniwan nila ang
+                            isang bahagi ng kanilang puso sa ating buhay.”
+                        </div>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 01</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Lola/lola1.jpg" alt="Lola smiling">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Lola · Memory 01</div>
+                        <h2>Ang iyong ngiti</h2>
+                        <p>
+                            Lola, salamat sa pagmamahal na walang hinihinging kapalit. Sa simpleng
+                            ngiti mo pa lamang, parang gumagaan na ang paligid. Ang larawan mong ito
+                            ay isa sa mga ngiting gusto naming habang buhay na maalala. Salamat sa
+                            pag-aalaga, pag-intindi, mga ngiti, mga salita at mga simpleng sandaling
+                            nagbigay kulay sa aming buhay.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 02</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Lola/lola2.jpg" alt="Lola biting birthday cake">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Lola · Memory 02</div>
+                        <h2>Ang birthday mo</h2>
+                        <p>
+                            Isa sa mga araw na gusto naming balikan ay ang mga birthday na kasama ka.
+                            Sa larawang ito, makikita kang masayang nakikisama at kinakagat ang cake.
+                            Maaaring simpleng sandali lamang ito noon, pero ngayon, isa na itong
+                            napakahalagang alaala. Sana ay maulit pa namin ang mga ganitong masasayang
+                            sandali kasama ka.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 03</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Lola/lola3.jpg" alt="Lola birthday memory">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Lola · Memory 03</div>
+                        <h2>Isang masayang araw</h2>
+                        <p>
+                            Isa na namang larawan mula sa isang birthday na hindi namin kailanman
+                            gustong mawala sa aming mga alaala. Ang saya sa mga ganitong araw ang
+                            isa sa mga bagay na gusto naming tandaan tungkol sa iyo. Kahit wala ka
+                            na sa tabi namin, ang saya ng mga araw na iyon ay mananatili sa aming
+                            puso.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 04</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Lola/lola4.jpg" alt="Lola laughing">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Lola · Memory 04</div>
+                        <h2>Ang sweet mong ngiti</h2>
+                        <p>
+                            Isa ito sa mga larawan na kapag tinitingnan namin ay parang naririnig
+                            namin ang tawa mo. Ang iyong simpleng pagtawa at sweet na ngiti ay mga
+                            bagay na sobrang nami-miss namin. Sana ay maaari naming marinig at makita
+                            kang muli kahit saglit lamang. Pero ang larawan mong ito ay mananatili
+                            bilang paalala ng saya na dinala mo sa aming buhay.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 05</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Lola/lola5.jpg" alt="Lola and Mama">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Lola · Memory 05</div>
+                        <h2>Ikaw at si Mama</h2>
+                        <p>
+                            Ang larawan mong kasama si Mama ay isa sa mga alaala na espesyal sa amin.
+                            Makikita rito ang pagmamahal at connection ng isang ina at anak. Mga
+                            sandaling maaaring ordinaryo lamang noon, pero ngayon ay napakahalaga.
+                            Ang ganitong mga larawan ang gusto naming panatilihin upang hindi mawala
+                            ang mga kwento ng aming pamilya.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 06</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Lola/lola6.jpg" alt="Mama and Lola">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Lola · Memory 06</div>
+                        <h2>Isa pang sandali ninyong dalawa</h2>
+                        <p>
+                            Isa pang larawan nina Mama at Lola na gusto naming itago sa aming puso.
+                            Bawat larawan ay may kwento, at bawat kwento ay bahagi ng aming pamilya.
+                            Kahit lumipas ang panahon, mananatili ang mga sandaling ito bilang
+                            patunay ng pagmamahalan at pagsasama na minsan naming naranasan.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 07</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Lola/lola7.jpg" alt="User and Lola">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Lola · Memory 07</div>
+                        <h2>Ako at ikaw, Lola</h2>
+                        <p>
+                            Isa sa mga larawang gusto kong habang buhay na iingatan ay ang larawan
+                            nating dalawa. Salamat dahil naging bahagi ka ng aking buhay. Salamat sa
+                            bawat sandaling nakasama kita, sa bawat ngiti, bawat yakap at bawat simpleng
+                            bagay na ginawa mong espesyal. Kung maaari lamang bumalik sa nakaraan,
+                            pipiliin kong makasama ka muli kahit saglit.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 08</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Lola/lola8.jpg" alt="User and Lola">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Lola · Memory 08</div>
+                        <h2>Isang alaala nating dalawa</h2>
+                        <p>
+                            Ang larawan nating ito ay isa sa mga bagay na babalikan ko kapag sobrang
+                            nami-miss kita. Maaaring larawan lamang ito sa ibang tao, pero para sa akin,
+                            dala nito ang isang buong kwento at isang sandaling hindi ko na mababalikan.
+                            Salamat, Lola, sa pagmamahal na ipinadama mo sa akin.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 09</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Lola/lola9.jpg" alt="User Lola and Mama">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Lola · Memory 09</div>
+                        <h2>Tayong tatlo</h2>
+                        <p>
+                            Ang larawan nating tatlo ay isang alaala ng pamilya na habang buhay
+                            naming iingatan. Ako, si Mama, at ikaw, Lola. Sa isang simpleng larawan,
+                            naroon ang napakaraming pagmamahal, kwento at sandaling hindi na mauulit.
+                            Kung gaano kasimple ang larawan, ganoon din kalaki ang halaga nito sa amin.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 10</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Lola/lola10.jpg" alt="Lola's wake">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Lola · Memory 10</div>
+                        <h2>Ang araw na kailangan naming magpaalam</h2>
+                        <p>
+                            Ito ang isa sa pinakamabigat na araw na hindi namin kailanman makakalimutan.
+                            Ang araw na nakita ka namin sa iyong burol at kailangan naming tanggapin na
+                            hindi ka na namin makakasama. Naroon din si Tito, nakaupo, kasama namin sa
+                            sandaling iyon. Hindi namin alam noon na darating din ang panahon na siya
+                            naman ang susunod naming mamimiss. Dalawang taong mahalaga sa aming pamilya,
+                            dalawang pagkawala na napakasakit tanggapin.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 11</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Lola/lola11.jpg" alt="Lola at her wake">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Lola · Memory 11</div>
+                        <h2>Ang huling sandali</h2>
+                        <p>
+                            Masakit balikan ang larawang ito, pero ayaw rin naming itago ang bahagi
+                            ng kwento mo. Ito ang panahon na kailangan naming harapin ang pagkawala mo.
+                            Sa gitna ng lungkot, dala pa rin namin ang pagmamahal namin sa iyo.
+                            Ang larawan na ito ay magiging paalala na minahal ka namin nang buong puso
+                            at hanggang sa huli, bahagi ka ng aming pamilya.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 12</span>
+            </section>
+
+            <section class="page photo-page">
+                <div class="page-inner">
+                    <div class="photo-frame">
+                        <img src="Lola/lola12.jpg" alt="User and Lola">
+                    </div>
+                    <div class="memory-text">
+                        <div class="memory-label">Lola · Memory 12</div>
+                        <h2>Kahit wala ka na</h2>
+                        <p>
+                            Ang larawan nating ito ay isang espesyal na alaala dahil kahit wala ka
+                            na, gusto pa rin naming magkaroon ng sandaling parang kasama ka namin.
+                            Maaaring hindi na kita mayakap at makausap tulad ng dati, pero ang
+                            pagmamahal ko sa iyo ay hindi natatapos. Sa puso ko, mananatili kang
+                            kasama ko kahit saan ako mapunta.
+                        </p>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 13</span>
+            </section>
+
+            <section class="page video-page">
+                <div class="page-inner">
+                    <div class="memory-label">Lola · Memory 13</div>
+                    <h2>Isang video ng ating alaala</h2>
+                    <p>
+                        Kapag nami-miss ka namin, babalikan namin ang mga sandaling tulad nito.
+                        Sa bawat segundo ng video, naaalala namin ang panahon na kasama ka pa namin.
+                        Hindi nito kayang ibalik ang nakaraan, pero kaya nitong ipaalala sa amin
+                        kung gaano kaganda ang mga alaala na iniwan mo.
+                    </p>
+                    <div class="video-frame">
+                        <video controls playsinline preload="metadata">
+                            <source src="Lola/lola.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 14</span>
+            </section>
+
+            <section class="page final-page">
+                <div class="page-inner">
+                    <div>
+                        <div class="cover-mark">🌹</div>
+                        <h1>Paalam, Lola</h1>
+                        <h2>Habang Buhay Ka Naming Mamahalin</h2>
+                        <p>
+                            Miss na miss ka namin araw-araw. Miss na rin namin si Tito mula noong
+                            Enero 3, 2024. Maraming bagay ang nagbago simula nang mawala kayo, ngunit
+                            isang bagay ang hindi kailanman magbabago—ang pagmamahal namin sa inyo.
+                            Lola at Tito, maaaring wala na kayo sa aming paningin, ngunit palagi
+                            kayong nasa aming mga puso. Sa bawat larawan, bawat kwento, bawat tawanan
+                            at bawat alaala, mananatili kayong kasama namin. Salamat sa pagmamahal na
+                            iniwan ninyo. Salamat sa buhay na ibinahagi ninyo sa amin.
+                            Hinding-hindi namin kayo makakalimutan. Mahal na mahal namin kayo.
+                            At kahit gaano pa katagal ang lumipas, palagi namin kayong mamahalin
+                            at mamimiss.
+                        </p>
+                        <div class="signature">
+                            Zyrus Jin V Ramos<br>
+                            Iyong pamangkin
+                        </div>
+                    </div>
+                </div>
+                <span class="page-number">LOLA · 15</span>
+            </section>
+
+        </div>
+    </div>
+
+    <div class="controls" id="controls" style="display:none">
+        <button class="control-btn" onclick="previousPage()" aria-label="Previous page">‹</button>
+        <div class="counter" id="counter">1 / 1</div>
+        <button class="control-btn" onclick="nextPage()" aria-label="Next page">›</button>
+    </div>
+
+</div>
+
+<script>
+const intro = document.getElementById("intro");
+const app = document.getElementById("app");
+const choiceScreen = document.getElementById("choiceScreen");
+const memorialMusic = document.getElementById("memorialMusic");
+const controls = document.getElementById("controls");
+const counter = document.getElementById("counter");
+const progress = document.getElementById("progress");
+const backChoice = document.getElementById("backChoice");
+
+let currentBook = null;
+let currentPage = 0;
+let pages = [];
+let touchStartX = 0;
+let touchStartY = 0;
+
+document.getElementById("enterButton").addEventListener("click", async () => {
+    try{
+        memorialMusic.currentTime = 0;
+        await memorialMusic.play();
+    }catch(e){}
+
+    intro.classList.add("hide");
+    app.classList.add("show");
+});
+
+memorialMusic.loop = false;
+
+memorialMusic.addEventListener("ended", () => {
+    memorialMusic.pause();
+    memorialMusic.currentTime = memorialMusic.duration;
+});
+
+function openBook(type){
+    currentBook = type;
+
+    choiceScreen.classList.add("hidden");
+
+    document.getElementById("titoBook").classList.remove("active");
+    document.getElementById("lolaBook").classList.remove("active");
+
+    const book = document.getElementById(type === "tito" ? "titoBook" : "lolaBook");
+    book.classList.add("active");
+
+    pages = Array.from(book.querySelectorAll(".page"));
+    currentPage = 0;
+
+    pages.forEach((page,index) => {
+        page.classList.remove("active","leaving");
+        if(index === 0){
+            page.classList.add("active");
+        }
+    });
+
+    controls.style.display = "flex";
+    backChoice.style.display = "block";
+
+    updateUI();
+}
+
+function closeVideos(){
+    document.querySelectorAll("video").forEach(video => {
+        video.pause();
+    });
+}
+
+function showPage(index){
+    if(index < 0 || index >= pages.length) return;
+
+    closeVideos();
+
+    const oldPage = pages[currentPage];
+
+    if(oldPage && oldPage !== pages[index]){
+        oldPage.classList.remove("active");
+        oldPage.classList.add("leaving");
+
+        setTimeout(() => {
+            oldPage.classList.remove("leaving");
+        },800);
+    }
+
+    currentPage = index;
+
+    pages[currentPage].classList.add("active");
+
+    updateUI();
+}
+
+function nextPage(){
+    if(!pages.length) return;
+
+    if(currentPage < pages.length - 1){
+        showPage(currentPage + 1);
+    }
+}
+
+function previousPage(){
+    if(!pages.length) return;
+
+    if(currentPage > 0){
+        showPage(currentPage - 1);
+    }
+}
+
+function updateUI(){
+    counter.textContent = (currentPage + 1) + " / " + pages.length;
+
+    const percentage = pages.length <= 1
+        ? 100
+        : ((currentPage) / (pages.length - 1)) * 100;
+
+    progress.style.width = percentage + "%";
+}
+
+function backToChoice(){
+    closeVideos();
+
+    document.getElementById("titoBook").classList.remove("active");
+    document.getElementById("lolaBook").classList.remove("active");
+
+    choiceScreen.classList.remove("hidden");
+
+    controls.style.display = "none";
+    backChoice.style.display = "none";
+
+    pages = [];
+    currentBook = null;
+    currentPage = 0;
+}
+
+document.addEventListener("keydown",event => {
+    if(!currentBook) return;
+
+    if(event.key === "ArrowRight" || event.key === " "){
+        event.preventDefault();
+        nextPage();
+    }
+
+    if(event.key === "ArrowLeft"){
+        event.preventDefault();
+        previousPage();
+    }
+
+    if(event.key === "Escape"){
+        backToChoice();
+    }
+});
+
+document.addEventListener("touchstart",event => {
+    if(!currentBook) return;
+
+    const touch = event.changedTouches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+},{passive:true});
+
+document.addEventListener("touchend",event => {
+    if(!currentBook) return;
+
+    const touch = event.changedTouches[0];
+    const diffX = touch.clientX - touchStartX;
+    const diffY = touch.clientY - touchStartY;
+
+    if(Math.abs(diffX) < 50) return;
+    if(Math.abs(diffX) < Math.abs(diffY)) return;
+
+    if(diffX < 0){
+        nextPage();
+    }else{
+        previousPage();
+    }
+},{passive:true});
+</script>
+
+</body>
+</html>
